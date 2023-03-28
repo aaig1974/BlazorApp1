@@ -1,0 +1,73 @@
+﻿@page "/anwesenheit"
+@using Models;
+
+<PageTitle>Anwesenheit</PageTitle>
+
+<h3 class="bg-light">@titleText</h3>
+
+
+<button class="btn btn-primary" @onclick="IncrementCount">@btnText</button>
+<select class="form-select" @onchange="@OnSelect">
+  <option selected>@bereich</option>
+  <option>Vögel füttern</option>
+  <option>Straße kehren</option>
+  <option>Kaffee kochen</option>
+  <option>Blumen gießen</option>
+</select>
+<br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Anmeldung</th>
+                <th>Abmeldung</th>
+                <th>Bereich</th>
+            </tr>
+        </thead>
+        <tbody>
+
+                @foreach(var meldedata in anwesenheitList)
+                {
+                    <tr>
+                        <td>@meldedata.Datum.ToString()</td>
+                        <td>@meldedata.AnmeldeZeit</td>
+                        <td>@meldedata.AbmeldeZeit</td>
+                        <td>@meldedata.Bereich</td>
+                    </tr>
+                }
+            
+        </tbody>
+    </table>
+
+@code {
+
+    string abmeldeZeit = string.Empty;
+    string btnText = "Anmelden";
+    string titleText = "Bitte melden Sie sich an!";
+    string bereich = "Bitte wählen Sie aus ...";
+    List<MeldeDaten> anwesenheitList = new List<MeldeDaten>();
+
+    private void IncrementCount()
+    {
+        if(anwesenheitList.Count == 0 || !(anwesenheitList.Last().Datum == DateOnly.FromDateTime(DateTime.Now)))
+        {   
+            anwesenheitList.Add(new MeldeDaten(bereich));
+            btnText = "Abmelden";
+            titleText = "Bitte melden Sie sich ab!";
+
+        }
+        else
+        {
+            var item = anwesenheitList.Last();
+            item.AbmeldeZeit = TimeOnly.FromDateTime(DateTime.Now).ToString("HH:mm");
+            btnText = "Anmelden";
+            titleText = "Sie sind jetzt abgemeldet. Schönen Feierabend!";
+        }
+
+    }
+    void OnSelect (ChangeEventArgs e)
+        {
+            bereich = e.Value.ToString();
+            
+        }
+}
